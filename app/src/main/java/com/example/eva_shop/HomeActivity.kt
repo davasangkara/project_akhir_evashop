@@ -18,6 +18,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var productAdapter: ProductAdapter
     private lateinit var searchEditText: EditText
 
+    private var favoriteList = ArrayList<Product>() // Daftar favorit
     private var cartList = ArrayList<Product>() // Keranjang untuk produk
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,14 +30,10 @@ class HomeActivity : AppCompatActivity() {
         productRecyclerView.layoutManager = GridLayoutManager(this, 2)
 
         productList = arrayListOf(
-            Product("Luna Dress Cradenza Silk", "120.000", R.drawable.luna_dress, false, false,
-                "Luna Dress berbahan silk dengan desain modern."),
-            Product("Love Shirt Kemeja", "100.000", R.drawable.love_shirt, false, false,
-                "Kemeja Love Shirt dengan bahan nyaman."),
-            Product("Pamela Sweater Rajut Korean", "140.000", R.drawable.pamela, false, false,
-                "Pamela Sweater berbahan rajut Korean Style."),
-            Product("Viora Pants Kulot Crincle", "110.000", R.drawable.viora, false, false,
-                "Viora Pants kulot stylish dengan bahan crinkle.")
+            Product("Luna Dress Cradenza Silk", "120.000", R.drawable.luna_dress, false, false, "Luna Dress berbahan silk dengan desain modern."),
+            Product("Love Shirt Kemeja", "100.000", R.drawable.love_shirt, false, false, "Kemeja Love Shirt dengan bahan nyaman."),
+            Product("Pamela Sweater Rajut Korean", "140.000", R.drawable.pamela, false, false, "Pamela Sweater berbahan rajut Korean Style."),
+            Product("Viora Pants Kulot Crincle", "110.000", R.drawable.viora, false, false, "Viora Pants kulot stylish dengan bahan crinkle.")
         )
 
         productAdapter = ProductAdapter(
@@ -54,9 +51,7 @@ class HomeActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 filterList(s.toString())
             }
-
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
@@ -66,6 +61,7 @@ class HomeActivity : AppCompatActivity() {
                 R.id.nav_home -> true
                 R.id.nav_category -> {
                     val intent = Intent(this, CategoryActivity::class.java)
+                    intent.putParcelableArrayListExtra("FAVORITE_LIST", favoriteList) // Kirim daftar favorit
                     startActivity(intent)
                     true
                 }
@@ -80,20 +76,15 @@ class HomeActivity : AppCompatActivity() {
         }
     }
 
-    private fun showProductDetail(product: Product) {
-        val intent = Intent(this, ProductDetailActivity::class.java)
-        intent.putExtra("PRODUCT", product)
-        startActivity(intent)
-    }
-
-    private fun filterList(query: String) {
-        val filteredList = productList.filter { it.name.contains(query, ignoreCase = true) }
-        productAdapter.updateList(ArrayList(filteredList))
-    }
-
     private fun toggleFavorite(product: Product, position: Int) {
         product.isFavorite = !product.isFavorite
-        productAdapter.notifyItemChanged(position)
+        // Update favorite list
+        if (product.isFavorite && !favoriteList.contains(product)) {
+            favoriteList.add(product)
+        } else {
+            favoriteList.remove(product)
+        }
+        productAdapter.notifyItemChanged(position) // Notify that the item has changed
     }
 
     private fun toggleCart(product: Product, position: Int) {
@@ -105,6 +96,17 @@ class HomeActivity : AppCompatActivity() {
         }
         productAdapter.notifyItemChanged(position)
         saveCartListToPreferences()
+    }
+
+    private fun showProductDetail(product: Product) {
+        val intent = Intent(this, ProductDetailActivity::class.java)
+        intent.putExtra("PRODUCT", product)
+        startActivity(intent)
+    }
+
+    private fun filterList(query: String) {
+        val filteredList = productList.filter { it.name.contains(query, ignoreCase = true) }
+        productAdapter.updateList(ArrayList(filteredList))
     }
 
     private fun increaseQuantity(product: Product, position: Int) {

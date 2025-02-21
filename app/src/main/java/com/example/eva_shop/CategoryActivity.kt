@@ -2,7 +2,6 @@ package com.example.eva_shop
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -27,9 +26,8 @@ class CategoryActivity : AppCompatActivity() {
 
         favoriteRecyclerView.layoutManager = GridLayoutManager(this, 2)
 
-        // DEBUGGING: Cek apakah data benar-benar diterima
+        // Menerima daftar favorit yang dikirim dari HomeActivity
         favoriteList = intent.getParcelableArrayListExtra("FAVORITE_LIST") ?: arrayListOf()
-        Log.d("CategoryActivity", "Received favoriteList: $favoriteList")
 
         if (favoriteList.isEmpty()) {
             favoriteRecyclerView.visibility = View.GONE
@@ -42,9 +40,9 @@ class CategoryActivity : AppCompatActivity() {
                 favoriteList,
                 { product, position -> toggleFavorite(product, position) },
                 { product, position -> toggleCart(product, position) },
-                { product -> showProductDetail(product) },  // OnProductClick
-                { product, position -> increaseQuantity(product, position) },  // OnIncreaseQuantity
-                { product, position -> decreaseQuantity(product, position) }  // OnDecreaseQuantity
+                { product -> showProductDetail(product) },
+                { product, position -> increaseQuantity(product, position) },
+                { product, position -> decreaseQuantity(product, position) }
             )
 
             favoriteRecyclerView.adapter = productAdapter
@@ -73,7 +71,6 @@ class CategoryActivity : AppCompatActivity() {
         }
     }
 
-    // Fungsi untuk menambah atau menghapus produk dari favorit
     private fun toggleFavorite(product: Product, position: Int) {
         product.isFavorite = !product.isFavorite
         if (!product.isFavorite) {
@@ -83,14 +80,13 @@ class CategoryActivity : AppCompatActivity() {
                 favoriteList.add(product)
             }
         }
-        productAdapter.notifyItemChanged(position) // Notify that the item has changed
+        productAdapter.notifyItemChanged(position)
         if (favoriteList.isEmpty()) {
             favoriteRecyclerView.visibility = View.GONE
             emptyMessage.visibility = View.VISIBLE
         }
     }
 
-    // Fungsi untuk menambah atau menghapus produk dari keranjang
     private fun toggleCart(product: Product, position: Int) {
         product.isInCart = !product.isInCart
         if (product.isInCart) {
@@ -100,24 +96,20 @@ class CategoryActivity : AppCompatActivity() {
         } else {
             cartList.remove(product)
         }
-        productAdapter.notifyItemChanged(position) // Notify that the item has changed
+        productAdapter.notifyItemChanged(position)
     }
 
-    // Menampilkan detail produk ketika item di klik
     private fun showProductDetail(product: Product) {
         val intent = Intent(this, ProductDetailActivity::class.java)
         intent.putExtra("PRODUCT", product)
         startActivity(intent)
     }
 
-    // Increase product quantity
     private fun increaseQuantity(product: Product, position: Int) {
-        // Assume you have a field for quantity in Product, which is an integer
         product.quantity++
         productAdapter.notifyItemChanged(position)
     }
 
-    // Decrease product quantity
     private fun decreaseQuantity(product: Product, position: Int) {
         if (product.quantity > 1) {
             product.quantity--
