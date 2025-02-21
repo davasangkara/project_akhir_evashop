@@ -13,6 +13,12 @@
         android:theme="@style/Theme.Eva_shop"
         tools:targetApi="31">
         <activity
+            android:name=".TshirtDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".TshirtActivity"
+            android:exported="false" />
+        <activity
             android:name=".ProductDetailActivity"
             android:exported="false" />
         <activity

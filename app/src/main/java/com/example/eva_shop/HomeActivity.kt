@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.Button
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -17,6 +18,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var productList: ArrayList<Product>
     private lateinit var productAdapter: ProductAdapter
     private lateinit var searchEditText: EditText
+    private lateinit var btnCategory: Button // Add Button
 
     private var favoriteList = ArrayList<Product>() // Daftar favorit
     private var cartList = ArrayList<Product>() // Keranjang untuk produk
@@ -27,8 +29,11 @@ class HomeActivity : AppCompatActivity() {
 
         searchEditText = findViewById(R.id.et_search)
         productRecyclerView = findViewById(R.id.recycler_view_products)
+        btnCategory = findViewById(R.id.btn_category) // Initialize the button
+
         productRecyclerView.layoutManager = GridLayoutManager(this, 2)
 
+        // Daftar produk
         productList = arrayListOf(
             Product("Luna Dress Cradenza Silk", "120.000", R.drawable.luna_dress, false, false, "Luna Dress berbahan silk dengan desain modern."),
             Product("Love Shirt Kemeja", "100.000", R.drawable.love_shirt, false, false, "Kemeja Love Shirt dengan bahan nyaman."),
@@ -41,8 +46,8 @@ class HomeActivity : AppCompatActivity() {
             { product, position -> toggleFavorite(product, position) },
             { product, position -> toggleCart(product, position) },
             { product -> showProductDetail(product) },
-            { product, position -> increaseQuantity(product, position) }, // Tambah quantity
-            { product, position -> decreaseQuantity(product, position) } // Kurangi quantity
+            { product, position -> increaseQuantity(product, position) },
+            { product, position -> decreaseQuantity(product, position) }
         )
 
         productRecyclerView.adapter = productAdapter
@@ -51,7 +56,9 @@ class HomeActivity : AppCompatActivity() {
             override fun afterTextChanged(s: Editable?) {
                 filterList(s.toString())
             }
+
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
@@ -74,11 +81,16 @@ class HomeActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        // Add the click listener for the Tshirt Button
+        btnCategory.setOnClickListener {
+            val intent = Intent(this, TshirtActivity::class.java) // Go to TshirtActivity
+            startActivity(intent)
+        }
     }
 
     private fun toggleFavorite(product: Product, position: Int) {
         product.isFavorite = !product.isFavorite
-        // Update favorite list
         if (product.isFavorite && !favoriteList.contains(product)) {
             favoriteList.add(product)
         } else {
