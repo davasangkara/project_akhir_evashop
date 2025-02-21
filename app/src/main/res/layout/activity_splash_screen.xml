@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg"
+    android:padding="16dp">
+
+    <!-- Teks "Eva Shop" -->
+    <TextView
+        android:id="@+id/tv_shop_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Eva Shop"
+        android:textSize="20sp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"/>
+
+    <!-- Teks "We are Open" -->
+    <TextView
+        android:id="@+id/tv_open_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="We are OPEN"
+        android:textSize="32sp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:layout_below="@id/tv_shop_name"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Jam Operasional -->
+    <TextView
+        android:id="@+id/tv_open_hours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="09.00am - 09.00pm"
+        android:textSize="18sp"
+        android:textColor="@android:color/white"
+        android:layout_below="@id/tv_open_status"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="12dp"/>
+
+    <!-- Tombol Get Started -->
+    <Button
+        android:id="@+id/btn_get_started"
+        android:layout_width="250dp"
+        android:layout_height="60dp"
+        android:text="Get Started"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:background="@drawable/button_background"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="50dp"/>
+
+</RelativeLayout>
