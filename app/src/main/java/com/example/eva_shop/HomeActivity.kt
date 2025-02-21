@@ -18,7 +18,6 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var productAdapter: ProductAdapter
     private lateinit var searchEditText: EditText
 
-    private var favoriteList = ArrayList<Product>() // Daftar favorit
     private var cartList = ArrayList<Product>() // Keranjang untuk produk
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,13 +39,14 @@ class HomeActivity : AppCompatActivity() {
                 "Viora Pants kulot stylish dengan bahan crinkle.")
         )
 
-        productAdapter = ProductAdapter(productList, { product, position ->
-            toggleFavorite(product, position)
-        }, { product, position ->
-            toggleCart(product, position)
-        }, { product ->
-            showProductDetail(product)
-        })
+        productAdapter = ProductAdapter(
+            productList,
+            { product, position -> toggleFavorite(product, position) },
+            { product, position -> toggleCart(product, position) },
+            { product -> showProductDetail(product) },
+            { product, position -> increaseQuantity(product, position) }, // Tambah quantity
+            { product, position -> decreaseQuantity(product, position) } // Kurangi quantity
+        )
 
         productRecyclerView.adapter = productAdapter
 
@@ -60,20 +60,17 @@ class HomeActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
         })
 
-        // Handle Bottom Navigation Click
         val bottomNavigationView = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> true
                 R.id.nav_category -> {
                     val intent = Intent(this, CategoryActivity::class.java)
-                    intent.putParcelableArrayListExtra("FAVORITE_LIST", favoriteList) // Mengirim favoriteList
                     startActivity(intent)
                     true
                 }
                 R.id.nav_cart -> {
                     val intent = Intent(this, CartActivity::class.java)
-                    // Kirim cartList ke CartActivity
                     saveCartListToPreferences()
                     startActivity(intent)
                     true
@@ -96,30 +93,34 @@ class HomeActivity : AppCompatActivity() {
 
     private fun toggleFavorite(product: Product, position: Int) {
         product.isFavorite = !product.isFavorite
-        if (product.isFavorite) {
-            if (!favoriteList.contains(product)) {
-                favoriteList.add(product)
-            }
-        } else {
-            favoriteList.remove(product)
-        }
-        productAdapter.notifyItemChanged(position) // Pastikan RecyclerView diperbarui
+        productAdapter.notifyItemChanged(position)
     }
 
     private fun toggleCart(product: Product, position: Int) {
         product.isInCart = !product.isInCart
         if (product.isInCart) {
-            if (!cartList.contains(product)) {
-                cartList.add(product) // Produk ditambahkan ke cartList
-            }
+            cartList.add(product)
         } else {
-            cartList.remove(product) // Produk dihapus dari cartList
+            cartList.remove(product)
         }
-        productAdapter.notifyItemChanged(position) // Pastikan RecyclerView diperbarui
-        saveCartListToPreferences() // Simpan perubahan cartList ke SharedPreferences
+        productAdapter.notifyItemChanged(position)
+        saveCartListToPreferences()
     }
 
-    // Menyimpan cartList ke SharedPreferences
+    private fun increaseQuantity(product: Product, position: Int) {
+        product.quantity++
+        productAdapter.notifyItemChanged(position)
+        saveCartListToPreferences() // Menyimpan perubahan
+    }
+
+    private fun decreaseQuantity(product: Product, position: Int) {
+        if (product.quantity > 1) {
+            product.quantity--
+            productAdapter.notifyItemChanged(position)
+            saveCartListToPreferences() // Menyimpan perubahan
+        }
+    }
+
     private fun saveCartListToPreferences() {
         val sharedPreferences = getSharedPreferences("CartData", MODE_PRIVATE)
         val editor = sharedPreferences.edit()

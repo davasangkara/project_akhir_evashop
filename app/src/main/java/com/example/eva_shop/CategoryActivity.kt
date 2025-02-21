@@ -38,13 +38,14 @@ class CategoryActivity : AppCompatActivity() {
             favoriteRecyclerView.visibility = View.VISIBLE
             emptyMessage.visibility = View.GONE
 
-            productAdapter = ProductAdapter(favoriteList, { product, position ->
-                toggleFavorite(product, position)
-            }, { product, position ->
-                toggleCart(product, position)
-            }, { product ->
-                showProductDetail(product) // Tambahkan fungsi ini agar produk bisa diklik
-            })
+            productAdapter = ProductAdapter(
+                favoriteList,
+                { product, position -> toggleFavorite(product, position) },
+                { product, position -> toggleCart(product, position) },
+                { product -> showProductDetail(product) },  // OnProductClick
+                { product, position -> increaseQuantity(product, position) },  // OnIncreaseQuantity
+                { product, position -> decreaseQuantity(product, position) }  // OnDecreaseQuantity
+            )
 
             favoriteRecyclerView.adapter = productAdapter
         }
@@ -107,5 +108,20 @@ class CategoryActivity : AppCompatActivity() {
         val intent = Intent(this, ProductDetailActivity::class.java)
         intent.putExtra("PRODUCT", product)
         startActivity(intent)
+    }
+
+    // Increase product quantity
+    private fun increaseQuantity(product: Product, position: Int) {
+        // Assume you have a field for quantity in Product, which is an integer
+        product.quantity++
+        productAdapter.notifyItemChanged(position)
+    }
+
+    // Decrease product quantity
+    private fun decreaseQuantity(product: Product, position: Int) {
+        if (product.quantity > 1) {
+            product.quantity--
+            productAdapter.notifyItemChanged(position)
+        }
     }
 }

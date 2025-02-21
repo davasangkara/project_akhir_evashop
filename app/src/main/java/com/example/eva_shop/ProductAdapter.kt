@@ -11,7 +11,9 @@ class ProductAdapter(
     private var productList: ArrayList<Product>,
     private val onFavoriteClick: (Product, Int) -> Unit,
     private val onCartClick: (Product, Int) -> Unit,
-    private val onProductClick: (Product) -> Unit
+    private val onProductClick: (Product) -> Unit,
+    private val onIncreaseQuantity: (Product, Int) -> Unit,  // New parameter for increase quantity
+    private val onDecreaseQuantity: (Product, Int) -> Unit   // New parameter for decrease quantity
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -20,6 +22,9 @@ class ProductAdapter(
         val productPrice: TextView = itemView.findViewById(R.id.tv_product_price)
         val favoriteIcon: ImageView = itemView.findViewById(R.id.iv_favorite)
         val cartIcon: ImageView = itemView.findViewById(R.id.iv_cart)
+        val quantityText: TextView = itemView.findViewById(R.id.tv_quantity)
+        val increaseQuantity: ImageView = itemView.findViewById(R.id.iv_increase)
+        val decreaseQuantity: ImageView = itemView.findViewById(R.id.iv_decrease)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
@@ -33,6 +38,7 @@ class ProductAdapter(
         holder.productImage.setImageResource(product.image)
         holder.productName.text = product.name
         holder.productPrice.text = product.price
+        holder.quantityText.text = product.quantity.toString()  // Display the quantity
 
         holder.favoriteIcon.setImageResource(
             if (product.isFavorite) R.drawable.ic_heart_filled else R.drawable.ic_heart_outline
@@ -52,6 +58,15 @@ class ProductAdapter(
 
         holder.itemView.setOnClickListener {
             onProductClick(product)
+        }
+
+        // Handling quantity increase and decrease
+        holder.increaseQuantity.setOnClickListener {
+            onIncreaseQuantity(product, position)
+        }
+
+        holder.decreaseQuantity.setOnClickListener {
+            onDecreaseQuantity(product, position)
         }
     }
 
